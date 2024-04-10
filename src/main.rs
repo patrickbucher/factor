@@ -9,16 +9,14 @@ fn main() {
 }
 
 struct PrimeIterator {
-    n :u64,
     i: u64,
     primes: Vec<u64>,
 }
 
 impl PrimeIterator {
-    fn new(n: u64) -> Self {
+    fn new() -> Self {
         PrimeIterator {
-            n: n,
-            i: 1,
+            i: 2,
             primes: Vec::new(),
         }
     }
@@ -28,14 +26,15 @@ impl Iterator for PrimeIterator {
     type Item = u64;
 
     fn next(&mut self) -> Option<u64> {
-        for j in self.i..=self.n {
-            if !self.primes.iter().any(|p| j % p == 0) {
-                self.primes.push(j);
-                return Some(j);
+        let mut i = self.i;
+        loop {
+            if !self.primes.iter().any(|p| i % p == 0) {
+                self.primes.push(i);
+                self.i = i + 1;
+                return Some(i);
             }
-            self.i = j;
+            i += 1;
         }
-        None
     }
 }
 
@@ -50,7 +49,7 @@ fn prime_sieve(n: u64) -> Vec<u64> {
 }
 
 fn factorize(n: u64) -> Vec<u64> {
-    let mut primes = PrimeIterator::new(n);
+    let mut primes = PrimeIterator::new();
     let mut factors = Vec::new();
     let mut n = n;
     let mut prime = match primes.next() {
@@ -68,7 +67,7 @@ fn factorize(n: u64) -> Vec<u64> {
                 Some(p) => p,
                 None => {
                     factors.push(n);
-                    break;
+                    return factors;
                 }
             }
         }
@@ -86,7 +85,7 @@ mod tests {
 
     #[test]
     fn prime_iterator() {
-        let mut iter = PrimeIterator::new(20);
+        let mut iter = PrimeIterator::new();
         assert_eq!(iter.next(), Some(2));
         assert_eq!(iter.next(), Some(3));
         assert_eq!(iter.next(), Some(5));
@@ -95,7 +94,6 @@ mod tests {
         assert_eq!(iter.next(), Some(13));
         assert_eq!(iter.next(), Some(17));
         assert_eq!(iter.next(), Some(19));
-        assert_eq!(iter.next(), None);
     }
 
     #[test]
