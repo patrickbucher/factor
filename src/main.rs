@@ -3,9 +3,14 @@ fn main() {
     args.next().expect("skipping the executable name");
     let argument = args.next().expect("number argument missing");
     let number: u64 = argument.parse().expect("argument is not a number");
-    println!("{}: {:?}", number, factorize(number));
-    //let n_sqrt = (number as f64).sqrt().ceil() as u64;
-    //println!("{} prime numbers computed", prime_sieve(n_sqrt).len());
+
+    let factors = factorize(number);
+    let factors = factors
+        .iter()
+        .map(|x| x.to_string())
+        .collect::<Vec<String>>()
+        .join(" ");
+    println!("{}: {}", number, factors);
 }
 
 struct PrimeIterator {
@@ -94,6 +99,11 @@ mod tests {
         assert_eq!(iter.next(), Some(13));
         assert_eq!(iter.next(), Some(17));
         assert_eq!(iter.next(), Some(19));
+    }
+
+    #[test]
+    fn factorize_39() {
+        assert_eq!(factorize(39), vec![3, 13]);
     }
 
     #[test]
